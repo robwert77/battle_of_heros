@@ -26,6 +26,8 @@ public class App extends Application {
 	// Game states
 	public static final int TITLE_SCREEN = 0;
 	public static final int PLAYING = 1;
+	public static final int GAME_OVER = 2;
+	public static final int GAME_SETTINGS = 3;
 
 	private int gameState = TITLE_SCREEN;
 
@@ -34,7 +36,7 @@ public class App extends Application {
 
 	private GameTimer gameTimer = new GameTimer(time -> updateGame(time));
 
-		private Sprite[] background = {
+	private Sprite[] background = {
 			new Sprite(new Image("file:resource/UI/LandingScreenBg.png", GAME_WIDTH, 0, true, true)),
 			new Sprite(new Image("file:resource/UI/LandingScreenBg.png", GAME_WIDTH, 0, true, true))
 	};
@@ -49,12 +51,14 @@ public class App extends Application {
 	private Sprite optionsButtonImg = new Sprite(new Image("file:resource/UI/Option_icon.png", 35, 0, true, false));
 	private Sprite startButtonImg = new Sprite(new Image("file:resource/UI/MoreGameBtn.png", 85, 0, true, true));
 	private Button leaderboardButton = new Button();
-	private Sprite leaderboardButtonImg = new Sprite(new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, true));
+	private Sprite leaderboardButtonImg = new Sprite(
+			new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, true));
 	// Game Screen Groups
-    private Group[] gameScreens = {
-        new Group(background[0], background[1],forggieStart, titleImage, startButton, leaderboardButton, letsGoText, optionsButton), // Add the background Sprites to the title screen group
-        new Group() // Add the playing screen elements to this group
-    };
+	private Group[] gameScreens = {
+			new Group(background[0], background[1], forggieStart, titleImage, startButton, leaderboardButton,
+					letsGoText, optionsButton), // Add the background Sprites to the title screen group
+			new Group() // Add the playing screen elements to this group
+	};
 
 	public App() {
 		newGame();
@@ -86,18 +90,23 @@ public class App extends Application {
 		startButton.setPrefSize(150, 50);
 		startButton.setStyle("-fx-background-color: transparent;");
 		startButton.setGraphic(startButtonImg);
-		startButton.setOnMouseEntered(e -> startButtonImg.setImage(new Image("file:resource/UI/MoreGameBtn_hover.png", 85, 0, true, false)));
-		startButton.setOnMouseExited(e -> startButtonImg.setImage(new Image("file:resource/UI/MoreGameBtn.png", 85, 0, true, false)));
+		startButton.setOnMouseEntered(
+				e -> startButtonImg.setImage(new Image("file:resource/UI/MoreGameBtn_hover.png", 85, 0, true, false)));
+		startButton.setOnMouseExited(
+				e -> startButtonImg.setImage(new Image("file:resource/UI/MoreGameBtn.png", 85, 0, true, false)));
 
 		leaderboardButton.setTranslateX(210);
 		leaderboardButton.setTranslateY(570);
 		leaderboardButton.setPrefSize(150, 50);
 		leaderboardButton.setStyle("-fx-background-color: transparent;");
 		leaderboardButton.setGraphic(leaderboardButtonImg);
-		leaderboardButton.setOnMouseEntered(e -> leaderboardButtonImg.setImage(new Image("file:resource/UI/LeaderboardBtn_hover.png", 85, 0, true, false)));
-		leaderboardButton.setOnMouseExited(e -> leaderboardButtonImg.setImage(new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, false)));
+		leaderboardButton.setOnMouseEntered(e -> leaderboardButtonImg
+				.setImage(new Image("file:resource/UI/LeaderboardBtn_hover.png", 85, 0, true, false)));
+		leaderboardButton.setOnMouseExited(e -> leaderboardButtonImg
+				.setImage(new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, false)));
 
-		letsGoText.relocate(45, 200);;
+		letsGoText.relocate(45, 200);
+		;
 		Shake letsGoShake = new Shake(letsGoText);
 		letsGoShake.setCycleCount(1000); // 1000 shakes
 		letsGoShake.setSpeed(0.1);
@@ -108,8 +117,10 @@ public class App extends Application {
 		optionsButton.setPrefSize(50, 50);
 		optionsButton.setStyle("-fx-background-color: transparent;");
 		optionsButton.setGraphic(optionsButtonImg);
-		optionsButton.setOnMouseEntered(e -> optionsButtonImg.setImage(new Image("file:resource/UI/Option_icon_hover.png", 35, 0, true, false)));
-		optionsButton.setOnMouseExited(e -> optionsButtonImg.setImage(new Image("file:resource/UI/Option_icon.png", 35, 0, true, false)));
+		optionsButton.setOnMouseEntered(e -> optionsButtonImg
+				.setImage(new Image("file:resource/UI/Option_icon_hover.png", 35, 0, true, false)));
+		optionsButton.setOnMouseExited(
+				e -> optionsButtonImg.setImage(new Image("file:resource/UI/Option_icon.png", 35, 0, true, false)));
 
 	}
 
