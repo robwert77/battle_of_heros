@@ -5,7 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class Sprite extends Group{
+public class Sprite extends Group {
 
 	private Image image;
 	private ImageView imgView = new ImageView();
@@ -16,26 +16,33 @@ public class Sprite extends Group{
 	private double width = 0;
 	private double height = 0;
 	private boolean isDead = false;
-	
-	public Sprite() {
-		this.getChildren().add(imgView);		
-	}
 
+	public Sprite() {
+		this.getChildren().add(imgView);
+	}
 
 	public Sprite(Image i) {
 		image = i;
-		width = (i != null)? i.getWidth() : 0;
-		height = (i != null)? i.getHeight() : 0;
+		width = (i != null) ? i.getWidth() : 0;
+		height = (i != null) ? i.getHeight() : 0;
 		imgView.setImage(i);
-		
+
 		this.getChildren().add(imgView);
 	}
-	
+
 	public void setImage(Image i) {
 		image = i;
-		width = (i != null)? i.getWidth() : 0;
-		height = (i != null)? i.getHeight() : 0;
+		width = (i != null) ? i.getWidth() : 0;
+		height = (i != null) ? i.getHeight() : 0;
 		imgView.setImage(i);
+	}
+
+	public void setResizedImage(Image i, double width, double height) {
+		Image resizedImage = new Image(i.getUrl(), width, height, true, false);
+		image = resizedImage;
+		this.width = (resizedImage != null) ? resizedImage.getWidth() : 0;
+		this.height = (resizedImage != null) ? resizedImage.getHeight() : 0;
+		imgView.setImage(resizedImage);
 	}
 
 	/**
@@ -109,9 +116,10 @@ public class Sprite extends Group{
 	public double getHeight() {
 		return height;
 	}
-	
+
 	/**
 	 * Move the sprite to a new location
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -120,9 +128,10 @@ public class Sprite extends Group{
 		positionY = y;
 		this.relocate(positionX, positionY);
 	}
-	
+
 	/**
 	 * Set the speed of the sprite in both directions.
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -133,6 +142,7 @@ public class Sprite extends Group{
 
 	/**
 	 * Add to the the speed of the sprite in both directions.
+	 * 
 	 * @param x
 	 * @param y
 	 */
@@ -141,7 +151,6 @@ public class Sprite extends Group{
 		velocityY += y;
 	}
 
-	
 	/**
 	 * Update the position of the sprite based on an an elapsed time in seconds
 	 * 
@@ -150,27 +159,28 @@ public class Sprite extends Group{
 	public void update(double elapsedTime) {
 		positionX = positionX + velocityX * elapsedTime;
 		positionY = positionY + velocityY * elapsedTime;
-		
-		this.relocate(positionX, positionY);		
+
+		this.relocate(positionX, positionY);
 	}
-	
+
 	/**
 	 * Returns a rectangle that encloses the sprite.
+	 * 
 	 * @return
 	 */
 	public Rectangle2D getBoundary() {
 		return new Rectangle2D(positionX, positionY, width, height);
 	}
-	
+
 	/**
 	 * Determines if the given sprite intersects with this sprite
+	 * 
 	 * @param s - the other sprite to test
 	 * @return true if the two sprites are touching, false otherwise.
 	 */
 	public boolean intersect(Sprite s) {
 		return this.getBoundary().intersects(s.getBoundary());
 	}
-
 
 	public boolean isReadyForCleanup() {
 		return isDead;
@@ -183,6 +193,5 @@ public class Sprite extends Group{
 	public boolean collidesWith(Sprite s) {
 		return false;
 	}
-
 
 }
