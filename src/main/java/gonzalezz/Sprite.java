@@ -37,6 +37,13 @@ public class Sprite extends Group {
 		imgView.setImage(i);
 	}
 
+	public void getimage(Image i) {
+		image = i;
+		width = (i != null) ? i.getWidth() : 0;
+		height = (i != null) ? i.getHeight() : 0;
+		imgView.setImage(i);
+	}
+
 	public void setResizedImage(Image i, double width, double height) {
 		Image resizedImage = new Image(i.getUrl(), width, height, true, false);
 		image = resizedImage;

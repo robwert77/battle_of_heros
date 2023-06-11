@@ -51,7 +51,7 @@ public class App extends Application {
 	private Sprite forggieStart = new Sprite(new Image("file:resource/UI/Frogie.png", 180, 0, true, true));
 	private Sprite titleImage = new Sprite(new Image("file:resource/UI/Logo.png", 340, 0, true, true));
 	private Sprite letsGoText = new Sprite(new Image("file:resource/UI/LetsGo_00.png", 340, 0, true, true));
-	private Sprite player = new Sprite(new Image("file:resource/UI/idle_forg.png", 170, 0, true, true));
+	private Frog player = new Frog();
 	// Buttons
 	private Button startButton = new Button();
 	private Button optionsButton = new Button();
@@ -62,13 +62,22 @@ public class App extends Application {
 			new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, true));
 
 	// Terrain Blocks
+	private Sprite[] bushBlock = new Sprite[20];
+	private Sprite[] fenceBlock = new Sprite[20];
+	private Sprite[] treeBlock = new Sprite[20];
+	private Sprite[] houseBlock = new Sprite[20];
+	private Sprite[] addOn2 = new Sprite[20];
+	private Sprite[] addOn3 = new Sprite[20];
+	private Sprite[] addOn4 = new Sprite[20];
+	private Car car1 = new Car();
 	private Sprite backgroundPlaying = new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true));
-	private Sprite bush = new Sprite(new Image("file:resource/Terrain/Bush.png", 30, 0, true, true));
 	// Game Screen Groups
+	private Group startingTerrain = new Group();
+	private Group roadTerrain = new Group();
 	private Group[] gameScreens = {
 			new Group(background[0], background[1], forggieStart, titleImage, startButton, leaderboardButton,
 					letsGoText, optionsButton), // Add the background Sprites to the title screen group
-			new Group(backgroundPlaying, player),
+			new Group(backgroundPlaying, roadTerrain, startingTerrain, player),
 			new Group() // Add the playing screen elements to this group
 	};
 
@@ -79,6 +88,8 @@ public class App extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Group root = new Group();
+		createStartingTerrain();
+		createRoadTerrain();
 		Scene gameScene = new Scene(root, GAME_WIDTH, GAME_HEIGHT, Color.WHITE);
 		primaryStage.setScene(gameScene);
 		primaryStage.setResizable(false);
@@ -153,6 +164,12 @@ public class App extends Application {
 	public void updateGame(double elapsedTime) {
 		updateBackground(elapsedTime);
 		updatePlayer(elapsedTime);
+
+		if (keyboard.contains(KeyCode.SPACE) && gameState == PLAYING) {
+			player.update(elapsedTime);
+		}
+
+		car1.update(elapsedTime);
 	}
 
 	/**
@@ -182,7 +199,8 @@ public class App extends Application {
 	 * Other key presses are stored in the "Keyboard" HashSet for polling
 	 * during the main game update.
 	 * 
-	 * @param key KeyEvent program is responding to
+	 * @param key         KeyEvent program is responding to
+	 * @param elapsedTime
 	 */
 	public void keyPressed(KeyEvent key) {
 		if (gameState == PLAYING) {
@@ -211,7 +229,6 @@ public class App extends Application {
 		if (gameState == PLAYING) {
 			if (!keyboard.contains(KeyCode.SPACE)) {
 				if (key.getCode() == KeyCode.SPACE) {
-					frogJumpAnimation();
 				}
 			}
 		}
@@ -228,27 +245,82 @@ public class App extends Application {
 		});
 	}
 
-	private void frogJumpAnimation() {
+	// starting terrain group for the game
+	private void createStartingTerrain() {
+		bushBlock[0] = new Sprite(Resources.BUSH);
+		bushBlock[0].relocate(0, 695);
+		bushBlock[0].relocate(0, 695);
+		bushBlock[1] = new Sprite(Resources.BUSH);
+		bushBlock[1].relocate(60, 696);
+		bushBlock[2] = new Sprite(Resources.BUSH);
+		bushBlock[2].relocate(120, 695);
+		bushBlock[3] = new Sprite(Resources.BUSH);
+		bushBlock[3].relocate(0, 480);
 
-		AnimationTimer timer = new AnimationTimer() {
-			private long lastUpdate = 0;
+		addOn2[0] = new Sprite(Resources.ADDON2);
+		addOn2[0].relocate(350, 700);
+		addOn2[1] = new Sprite(Resources.ADDON2);
+		addOn2[1].relocate(370, 700);
 
-			@Override
-			public void handle(long now) {
-				if (now - lastUpdate >= 80_00_00) {
-					Image frameImage = new Image("file:resource/Moving_Frog/Moving_" + frameNumber + ".png");
-					player.setResizedImage(frameImage, 180, 180);
-					frameNumber++;
-					if (frameNumber > 20) { // 20 frames
-						player.setPositionY(player.getPositionY() - +30);
-						frameNumber = 1;
-						stop();
-					}
-					lastUpdate = now;
-				}
-			}
-		};
-		timer.start();
+		addOn4[0] = new Sprite(Resources.ADDON4);
+		addOn4[0].relocate(340, 720);
+		addOn4[1] = new Sprite(Resources.ADDON4);
+		addOn4[1].relocate(360, 725);
+		for (int i = 2; i < 8; i++) {
+			addOn2[i] = new Sprite(Resources.ADDON2);
+			addOn4[i] = new Sprite(Resources.ADDON4);
+			addOn3[i] = new Sprite(Resources.ADDON3);
+
+			// use Math.random() to generate random number between 700 and 480
+			int max = 700;
+			int min = 480;
+			addOn3[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
+			addOn2[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
+			addOn4[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
+
+			startingTerrain.getChildren().addAll(addOn2[i], addOn4[i], addOn3[i]);
+		}
+
+		treeBlock[0] = new Sprite(Resources.TREE);
+		treeBlock[0].relocate(330, 550);
+
+		treeBlock[1] = new Sprite(Resources.TREE);
+		treeBlock[1].relocate(350, 450);
+
+		fenceBlock[0] = new Sprite(Resources.FENCE);
+		fenceBlock[0].relocate(0, 420);
+
+		// add another fence
+		fenceBlock[1] = new Sprite(Resources.FENCE);
+		fenceBlock[1].relocate(300, 420);
+
+		Sprite floor = new Sprite(Resources.FLOOR);
+		floor.relocate(2, 755);
+
+		houseBlock[0] = new Sprite(Resources.BUILDING1);
+		houseBlock[0].relocate(15, 460);
+
+		player.setPosition(0, 0);    
+
+		startingTerrain.getChildren().addAll(bushBlock[0], bushBlock[1], bushBlock[2], addOn2[0], addOn4[0], addOn2[1],
+				addOn4[1], treeBlock[1], treeBlock[0], houseBlock[0], fenceBlock[0], fenceBlock[1], bushBlock[3],
+				floor, player);
+	}
+
+	public void createRoadTerrain() {
+		Sprite road = new Sprite(Resources.STREET);
+		road.relocate(0, 210);
+
+		// make to side walks
+		Sprite sideWalk = new Sprite(Resources.FLOOR);
+		sideWalk.relocate(0, 175);
+
+		Sprite sideWalk2 = new Sprite(Resources.FLOOR);
+		sideWalk2.relocate(0, 380);
+
+		car1.setPosition(-200, 200);
+
+		roadTerrain.getChildren().addAll(road, sideWalk, sideWalk2, car1);
 	}
 
 	/**
