@@ -163,13 +163,10 @@ public class App extends Application {
 	 */
 	public void updateGame(double elapsedTime) {
 		updateBackground(elapsedTime);
-		updatePlayer(elapsedTime);
-
-		if (keyboard.contains(KeyCode.SPACE) && gameState == PLAYING) {
-			player.update(elapsedTime);
-		}
-
+		
+		player.update(elapsedTime);
 		car1.update(elapsedTime);
+
 	}
 
 	/**
@@ -227,9 +224,8 @@ public class App extends Application {
 		}
 
 		if (gameState == PLAYING) {
-			if (!keyboard.contains(KeyCode.SPACE)) {
-				if (key.getCode() == KeyCode.SPACE) {
-				}
+			if (key.getCode() == KeyCode.SPACE) {
+				player.startJump(); // Make the player jump when SPACE is pressed
 			}
 		}
 
@@ -300,7 +296,7 @@ public class App extends Application {
 		houseBlock[0] = new Sprite(Resources.BUILDING1);
 		houseBlock[0].relocate(15, 460);
 
-		player.setPosition(0, 0);    
+		player.setPosition(0, 0);
 
 		startingTerrain.getChildren().addAll(bushBlock[0], bushBlock[1], bushBlock[2], addOn2[0], addOn4[0], addOn2[1],
 				addOn4[1], treeBlock[1], treeBlock[0], houseBlock[0], fenceBlock[0], fenceBlock[1], bushBlock[3],

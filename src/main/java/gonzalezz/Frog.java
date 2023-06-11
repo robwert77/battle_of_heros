@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 
 public class Frog extends Sprite {
 
+    private boolean animationEnded = true;
+
     private final static Image[] frames = {
             new Image("file:resource/Moving_Frog/Moving_1.png", 160, 0, true, true),
             new Image("file:resource/Moving_Frog/Moving_2.png", 160, 0, true, true),
@@ -36,16 +38,32 @@ public class Frog extends Sprite {
     public void update(double time) {
         super.update(time);
 
-        if (frameTime <= 0) {
-            currentFrame++;
-            if (currentFrame >= frames.length)
-                currentFrame = 0;
-            super.setImage(frames[currentFrame]);
-            super.setVelocityY(-80);
-            frameTime = 0.02;
-        } else {
-            frameTime -= time;
+        if (!animationEnded) {
+            if (frameTime <= 0) {
+                currentFrame++;
+                if (currentFrame >= frames.length)
+                    currentFrame = 0;
+                super.setImage(frames[currentFrame]);
+
+                if (frames[currentFrame] == frames[19]) {
+                    frameTime = 0;
+                    animationEnded = true;
+                    super.setVelocityY(0);
+                } else {
+                    super.setVelocityY(-131);
+                    frameTime = 0.02;
+                }
+            } else {
+                frameTime -= time;
+            }
         }
     }
 
+    public void startJump() {
+        if (animationEnded) {
+            animationEnded = false;
+            currentFrame = 0;
+            frameTime = 0.08;
+        }
+    }
 }
