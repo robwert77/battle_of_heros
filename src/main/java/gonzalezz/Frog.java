@@ -29,7 +29,7 @@ public class Frog extends Sprite {
             new Image("file:resource/Moving_Frog/Moving_20.png", 160, 0, true, true)
     };
     private int currentFrame = 0;
-    private double frameTime = 0.08;
+    private double frameTime;
 
     Frog() {
         super.setImage(Resources.PLAYER_IDLE);
@@ -50,8 +50,8 @@ public class Frog extends Sprite {
                     animationEnded = true;
                     super.setVelocityY(0);
                 } else {
-                    super.setVelocityY(-131);
-                    frameTime = 0.02;
+                    super.setVelocityY(-110);
+                    frameTime = 0.008;
                 }
             } else {
                 frameTime -= time;
@@ -62,8 +62,10 @@ public class Frog extends Sprite {
     public void startJump() {
         if (animationEnded) {
             animationEnded = false;
-            currentFrame = 0;
-            frameTime = 0.08;
         }
+    }
+
+    public boolean getAnimationEnded() {
+        return animationEnded;
     }
 }

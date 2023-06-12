@@ -33,5 +33,11 @@ public class Resources {
 
     public static Image PLAYER_IDLE = new Image("file:resource/Moving_Frog/Moving_1.png", 160, 0, true, true);
 
+    public static Image WATER = new Image("file:resource/Terrain/Water.png", GAME_WIDTH, 0, true, true);
 
+    public static Image WOOD01 = new Image("file:resource/Terrain/Wood01.png", 80, 0, true, true);
+
+    public static Image WOOD02 = new Image("file:resource/Terrain/Wood02.png", 80, 0, true, true);
+
+    public static Image WOOD03 = new Image("file:resource/Terrain/Wood03.png", 80, 0, true, true);
 }

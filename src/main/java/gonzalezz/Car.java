@@ -49,5 +49,4 @@ public class Car extends Sprite {
             frameTime -= time;
         }
     }
-
 }

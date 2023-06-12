@@ -26,6 +26,7 @@ public class App extends Application {
 	// Window size constants
 	public final static int GAME_WIDTH = 450;
 	public final static int GAME_HEIGHT = 800;
+	public final static int OFF_SCREEN = 720;
 
 	// Game states
 	public static final int TITLE_SCREEN = 0;
@@ -35,7 +36,8 @@ public class App extends Application {
 	private int gameState = TITLE_SCREEN;
 
 	// needed variables
-	private int frameNumber = 1;
+	private int roadTerrainOffCount = 0;
+	private int jumps = 0;
 
 	// used to track keys as they are pressed/released.
 	private final HashSet keyboard = new HashSet();
@@ -70,14 +72,19 @@ public class App extends Application {
 	private Sprite[] addOn3 = new Sprite[20];
 	private Sprite[] addOn4 = new Sprite[20];
 	private Car car1 = new Car();
-	private Sprite backgroundPlaying = new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true));
+	private Sprite[] backgroundPlaying = {
+			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)),
+			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)) };
 	// Game Screen Groups
 	private Group startingTerrain = new Group();
 	private Group roadTerrain = new Group();
+	private Group backgroundDisplay = new Group(backgroundPlaying[0], backgroundPlaying[1]);
+
+	private Group waterTerrain = new Group();
 	private Group[] gameScreens = {
 			new Group(background[0], background[1], forggieStart, titleImage, startButton, leaderboardButton,
 					letsGoText, optionsButton), // Add the background Sprites to the title screen group
-			new Group(backgroundPlaying, roadTerrain, startingTerrain, player),
+			new Group(backgroundDisplay, roadTerrain, waterTerrain, startingTerrain),
 			new Group() // Add the playing screen elements to this group
 	};
 
@@ -88,8 +95,9 @@ public class App extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Group root = new Group();
-		createStartingTerrain();
 		createRoadTerrain();
+		createWaterTerrain();
+		createStartingTerrain();
 		Scene gameScene = new Scene(root, GAME_WIDTH, GAME_HEIGHT, Color.WHITE);
 		primaryStage.setScene(gameScene);
 		primaryStage.setResizable(false);
@@ -152,6 +160,11 @@ public class App extends Application {
 	 * Setup all sprites for a new game
 	 */
 	public void newGame() {
+		backgroundPlaying[0].setPositionY(0);
+		backgroundPlaying[1].setPositionY(-background[1].getHeight());
+		backgroundPlaying[0].setVelocityY(200);
+		backgroundPlaying[1].setVelocityY(200);
+
 		// Reset the player to the center of the screen
 		player.setTranslateX(GAME_WIDTH / 2 - 85);
 		player.setTranslateY(650);
@@ -163,7 +176,7 @@ public class App extends Application {
 	 */
 	public void updateGame(double elapsedTime) {
 		updateBackground(elapsedTime);
-		
+
 		player.update(elapsedTime);
 		car1.update(elapsedTime);
 
@@ -185,8 +198,27 @@ public class App extends Application {
 	 * 
 	 * @param elapsedTime amount of time passed since last update.
 	 */
-	public void updateBackground(double elapsedTime) {
 
+	public void updateBackground(double elapsedTime) {
+		gameScreens[PLAYING].setTranslateY(gameScreens[PLAYING].getTranslateY() + 1);
+
+		backgroundPlaying[0].setTranslateY(backgroundPlaying[0].getTranslateY() + 0.01);
+		backgroundPlaying[1].setTranslateY(backgroundPlaying[1].getTranslateY() + 0.01);
+		  
+		if (backgroundPlaying[0].getPositionY() > GAME_HEIGHT) {
+			backgroundPlaying[0].setPositionY(-backgroundPlaying[0].getHeight());
+		}
+		if (backgroundPlaying[1].getPositionY() > GAME_HEIGHT) {
+			backgroundPlaying[1].setPositionY(-backgroundPlaying[1].getHeight());
+		}
+
+		if (roadTerrain.getTranslateY() > OFF_SCREEN) {
+			roadTerrain.setTranslateY(0);
+			roadTerrainOffCount += 1;
+		}
+		if (waterTerrain.getTranslateY() > OFF_SCREEN) {
+			waterTerrain.setTranslateY(0);
+		}
 	}
 
 	/**
@@ -226,6 +258,9 @@ public class App extends Application {
 		if (gameState == PLAYING) {
 			if (key.getCode() == KeyCode.SPACE) {
 				player.startJump(); // Make the player jump when SPACE is pressed
+				if (player.getAnimationEnded() == true) {
+					jumps += 1;
+				}
 			}
 		}
 
@@ -317,6 +352,16 @@ public class App extends Application {
 		car1.setPosition(-200, 200);
 
 		roadTerrain.getChildren().addAll(road, sideWalk, sideWalk2, car1);
+	}
+
+	public void createWaterTerrain() {
+		Sprite water = new Sprite(Resources.WATER);
+		water.relocate(0, 49.5);
+
+		Sprite sidewalk = new Sprite(Resources.FLOOR);
+		sidewalk.relocate(0, 3);
+
+		waterTerrain.getChildren().addAll(water, sidewalk);
 	}
 
 	/**
