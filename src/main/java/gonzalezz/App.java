@@ -2,24 +2,17 @@ package gonzalezz;
 
 import java.util.HashSet;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import animatefx.animation.*;
-import javafx.stage.StageStyle;
 
 public class App extends Application {
 
@@ -31,7 +24,7 @@ public class App extends Application {
 	// Game states
 	public static final int TITLE_SCREEN = 0;
 	public static final int PLAYING = 1;
-	public static final int TILE_GROUP = 2;
+	public static final int BACKGROUND = 2;
 
 	private int gameState = TITLE_SCREEN;
 
@@ -72,20 +65,22 @@ public class App extends Application {
 	private Sprite[] addOn3 = new Sprite[20];
 	private Sprite[] addOn4 = new Sprite[20];
 	private Car car1 = new Car();
+	Wood wood[] = new Wood[5];
 	private Sprite[] backgroundPlaying = {
 			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)),
 			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)) };
 	// Game Screen Groups
 	private Group startingTerrain = new Group();
 	private Group roadTerrain = new Group();
+	private Group grassTerrain = new Group();
 	private Group backgroundDisplay = new Group(backgroundPlaying[0], backgroundPlaying[1]);
 
 	private Group waterTerrain = new Group();
 	private Group[] gameScreens = {
 			new Group(background[0], background[1], forggieStart, titleImage, startButton, leaderboardButton,
 					letsGoText, optionsButton), // Add the background Sprites to the title screen group
-			new Group(backgroundDisplay, roadTerrain, waterTerrain, startingTerrain),
-			new Group() // Add the playing screen elements to this group
+			new Group(roadTerrain, waterTerrain, startingTerrain, grassTerrain),
+			new Group(backgroundDisplay) // Add the playing screen elements to this group
 	};
 
 	public App() {
@@ -98,6 +93,7 @@ public class App extends Application {
 		createRoadTerrain();
 		createWaterTerrain();
 		createStartingTerrain();
+		createGrassTerrain();
 		Scene gameScene = new Scene(root, GAME_WIDTH, GAME_HEIGHT, Color.WHITE);
 		primaryStage.setScene(gameScene);
 		primaryStage.setResizable(false);
@@ -106,7 +102,7 @@ public class App extends Application {
 
 		gameScene.setOnKeyPressed(key -> keyPressed(key));
 		gameScene.setOnKeyReleased(key -> keyReleased(key));
-		root.getChildren().addAll(gameScreens[PLAYING], gameScreens[TITLE_SCREEN]);
+		root.getChildren().addAll(gameScreens[BACKGROUND], gameScreens[PLAYING], gameScreens[TITLE_SCREEN], player);
 		gameScreens[TITLE_SCREEN].setVisible(true);
 		gameScreens[PLAYING].setVisible(true);
 
@@ -153,7 +149,6 @@ public class App extends Application {
 				.setImage(new Image("file:resource/UI/Option_icon_hover.png", 35, 0, true, false)));
 		optionsButton.setOnMouseExited(
 				e -> optionsButtonImg.setImage(new Image("file:resource/UI/Option_icon.png", 35, 0, true, false)));
-
 	}
 
 	/**
@@ -165,21 +160,23 @@ public class App extends Application {
 		backgroundPlaying[0].setVelocityY(200);
 		backgroundPlaying[1].setVelocityY(200);
 
-		// Reset the player to the center of the screen
-		player.setTranslateX(GAME_WIDTH / 2 - 85);
-		player.setTranslateY(650);
-
+		player.setVisible(true);
 	}
 
 	/**
 	 * Game updates happen as often as the timer can cause an event
 	 */
 	public void updateGame(double elapsedTime) {
-		updateBackground(elapsedTime);
+		// updateBackground(elapsedTime);
+		updateTerrain(elapsedTime);
 
 		player.update(elapsedTime);
 		car1.update(elapsedTime);
-
+		
+		wood[0].updateW(elapsedTime, wood[3]);
+		wood[1].updateW(elapsedTime, wood[2]);
+		wood[2].updateW(elapsedTime, wood[1]);
+		wood[3].updateW(elapsedTime, wood[0]);
 	}
 
 	/**
@@ -191,34 +188,54 @@ public class App extends Application {
 
 	}
 
-	/**
-	 * Updates the background to create road animation. Moves both images down the
-	 * window.
-	 * When an image passes below the bottom of the window, resets it to the top
-	 * 
-	 * @param elapsedTime amount of time passed since last update.
-	 */
+	// /**
+	//  * Updates the background to create road animation. Moves both images down the
+	//  * window.
+	//  * When an image passes below the bottom of the window, resets it to the top
+	//  * 
+	//  * @param elapsedTime amount of time passed since last update.
+	//  */
 
-	public void updateBackground(double elapsedTime) {
-		gameScreens[PLAYING].setTranslateY(gameScreens[PLAYING].getTranslateY() + 1);
+	// public void updateBackground(double elapsedTime) {
 
-		backgroundPlaying[0].setTranslateY(backgroundPlaying[0].getTranslateY() + 0.01);
-		backgroundPlaying[1].setTranslateY(backgroundPlaying[1].getTranslateY() + 0.01);
-		  
-		if (backgroundPlaying[0].getPositionY() > GAME_HEIGHT) {
-			backgroundPlaying[0].setPositionY(-backgroundPlaying[0].getHeight());
-		}
-		if (backgroundPlaying[1].getPositionY() > GAME_HEIGHT) {
-			backgroundPlaying[1].setPositionY(-backgroundPlaying[1].getHeight());
-		}
+	// 	backgroundPlaying[0].setPositionY(backgroundPlaying[0].getPositionY() + 0.01);
+	// 	backgroundPlaying[1].setPositionY(backgroundPlaying[1].getPositionY() + 0.01);
 
-		if (roadTerrain.getTranslateY() > OFF_SCREEN) {
-			roadTerrain.setTranslateY(0);
+	// 	if (backgroundPlaying[0].getPositionY() > 700) {
+	// 		backgroundPlaying[0].setPositionY(-backgroundPlaying[0].getHeight());
+	// 	}
+	// 	if (backgroundPlaying[1].getPositionY() > 700) {
+	// 		backgroundPlaying[1].setPositionY(-backgroundPlaying[1].getHeight());
+	// 	}
+	// }
+
+	public void updateTerrain(double elapsedTime) {
+		double speed = 1;
+
+		roadTerrain.setTranslateY(roadTerrain.getTranslateY() + speed);
+		if (roadTerrain.getTranslateY() >= GAME_HEIGHT) {
+			System.out.println("Moving Raod Terrain");
+			roadTerrain.setTranslateY(-roadTerrain.getBoundsInLocal().getHeight());
 			roadTerrainOffCount += 1;
 		}
-		if (waterTerrain.getTranslateY() > OFF_SCREEN) {
-			waterTerrain.setTranslateY(0);
+
+		waterTerrain.setTranslateY(waterTerrain.getTranslateY() + speed);
+		if (waterTerrain.getTranslateY() >= GAME_HEIGHT) {
+			System.out.println("Moving water Terrain");
+			waterTerrain.setTranslateY(-waterTerrain.getBoundsInLocal().getHeight() - 115);
 		}
+
+		startingTerrain.setTranslateY(startingTerrain.getTranslateY() + speed);
+		if (startingTerrain.getTranslateY() >= GAME_HEIGHT) {
+			// delete the starting terrain
+			startingTerrain.getChildren().clear();
+		}
+
+		grassTerrain.setTranslateY(grassTerrain.getTranslateY() + speed);
+        if (grassTerrain.getTranslateY() >= GAME_HEIGHT) {
+			System.out.println("Moving Grass Terrain");
+            grassTerrain.setTranslateY(-grassTerrain.getBoundsInLocal().getHeight());
+        }
 	}
 
 	/**
@@ -331,37 +348,66 @@ public class App extends Application {
 		houseBlock[0] = new Sprite(Resources.BUILDING1);
 		houseBlock[0].relocate(15, 460);
 
-		player.setPosition(0, 0);
-
 		startingTerrain.getChildren().addAll(bushBlock[0], bushBlock[1], bushBlock[2], addOn2[0], addOn4[0], addOn2[1],
 				addOn4[1], treeBlock[1], treeBlock[0], houseBlock[0], fenceBlock[0], fenceBlock[1], bushBlock[3],
-				floor, player);
+				floor);
 	}
 
 	public void createRoadTerrain() {
 		Sprite road = new Sprite(Resources.STREET);
-		road.relocate(0, 210);
+		road.relocate(0, 35);
 
 		// make to side walks
 		Sprite sideWalk = new Sprite(Resources.FLOOR);
-		sideWalk.relocate(0, 175);
+		sideWalk.relocate(0, 0);
 
 		Sprite sideWalk2 = new Sprite(Resources.FLOOR);
-		sideWalk2.relocate(0, 380);
+		sideWalk2.relocate(0, 205);
 
-		car1.setPosition(-200, 200);
+		car1.setPosition(-200, 25);
 
 		roadTerrain.getChildren().addAll(road, sideWalk, sideWalk2, car1);
+		roadTerrain.setTranslateY(175);
 	}
 
 	public void createWaterTerrain() {
 		Sprite water = new Sprite(Resources.WATER);
-		water.relocate(0, 49.5);
+		water.relocate(0, 9.5);
 
-		Sprite sidewalk = new Sprite(Resources.FLOOR);
-		sidewalk.relocate(0, 3);
+		Sprite divider = new Sprite(Resources.ADDON5);
+		divider.relocate(0, 0);
 
-		waterTerrain.getChildren().addAll(water, sidewalk);
+		wood[0] = new Wood();
+		wood[0].setPositionY(15);
+		wood[1] = new Wood();
+		wood[2] = new Wood();
+		wood[3] = new Wood();
+		wood[3].setPositionY(15);
+
+		waterTerrain.getChildren().addAll(water, divider, wood[0], wood[1], wood[2]);
+		waterTerrain.setTranslateY(40);
+	}
+
+	public void createGrassTerrain() {
+		Sprite building = new Sprite(Resources.BUILDING2);
+		building.relocate(0, -200);
+
+		for (int i = 3; i < 10; i++) {
+			addOn2[i] = new Sprite(Resources.ADDON2);
+			addOn4[i] = new Sprite(Resources.ADDON4);
+			addOn3[i] = new Sprite(Resources.ADDON3);
+
+			// use Math.random() to generate random number between 700 and 480
+			int max = -80;
+			int min = 10;
+			addOn3[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
+			addOn2[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
+			addOn4[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
+
+			grassTerrain.getChildren().addAll(addOn2[i], addOn4[i], addOn3[i]);
+		}
+
+		grassTerrain.getChildren().addAll(building);
 	}
 
 	/**
@@ -380,6 +426,7 @@ public class App extends Application {
 	public void startGame() {
 		gameScreens[TITLE_SCREEN].setVisible(false);
 		gameScreens[PLAYING].setVisible(true);
+		gameScreens[BACKGROUND].setVisible(true);
 		gameState = PLAYING;
 		gameTimer.start();
 	}

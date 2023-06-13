@@ -15,6 +15,8 @@ public class Resources {
 
     public static final Image ADDON4 = new Image("file:resource/Terrain/accs04.png", 20, 0, true, true);
 
+    public static final Image ADDON5 = new Image("file:resource/Terrain/accs05.png", GAME_WIDTH, 0, true, true);
+
     public static final Image TREE = new Image("file:resource/Terrain/Tree.png", 150, 0, true, true);
 
     public static final Image FENCE = new Image("file:resource/Terrain/Fence.png", 140, 0, true, true);
@@ -22,6 +24,8 @@ public class Resources {
     public static final Image FLOOR = new Image("file:resource/Terrain/Floor.png", GAME_WIDTH, 0, true, true);
 
     public static final Image BUILDING1 = new Image("file:resource/Terrain/Building01.png", 150, 0, true, true);
+
+    public static final Image BUILDING2 = new Image("file:resource/Terrain/Building02.png", 190, 0, true, true);
 
     public static Image STREET = new Image("file:resource/Terrain/Street.png", GAME_WIDTH, 0, true, true);
 

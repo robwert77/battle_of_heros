@@ -28,11 +28,15 @@ public class Frog extends Sprite {
             new Image("file:resource/Moving_Frog/Moving_19.png", 160, 0, true, true),
             new Image("file:resource/Moving_Frog/Moving_20.png", 160, 0, true, true)
     };
+
     private int currentFrame = 0;
     private double frameTime;
 
     Frog() {
         super.setImage(Resources.PLAYER_IDLE);
+        super.setPosition(150, 650);
+        super.setVelocityY(60);
+        super.setVisible(false);
     }
 
     public void update(double time) {
@@ -48,9 +52,9 @@ public class Frog extends Sprite {
                 if (frames[currentFrame] == frames[19]) {
                     frameTime = 0;
                     animationEnded = true;
-                    super.setVelocityY(0);
+                    super.setVelocityY(60);
                 } else {
-                    super.setVelocityY(-110);
+                    super.setVelocityY(-40);
                     frameTime = 0.008;
                 }
             } else {
