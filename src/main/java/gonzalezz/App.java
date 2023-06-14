@@ -215,14 +215,14 @@ public class App extends Application {
 		roadTerrain.setTranslateY(roadTerrain.getTranslateY() + speed);
 		if (roadTerrain.getTranslateY() >= GAME_HEIGHT) {
 			System.out.println("Moving Raod Terrain");
-			roadTerrain.setTranslateY(-roadTerrain.getBoundsInLocal().getHeight());
+			roadTerrain.setTranslateY(grassTerrain.getTranslateY()-roadTerrain.getBoundsInParent().getHeight());
 			roadTerrainOffCount += 1;
 		}
 
 		waterTerrain.setTranslateY(waterTerrain.getTranslateY() + speed);
 		if (waterTerrain.getTranslateY() >= GAME_HEIGHT) {
 			System.out.println("Moving water Terrain");
-			waterTerrain.setTranslateY(-waterTerrain.getBoundsInLocal().getHeight() - 115);
+			waterTerrain.setTranslateY(roadTerrain.getTranslateY() - waterTerrain.getBoundsInParent().getHeight());
 		}
 
 		startingTerrain.setTranslateY(startingTerrain.getTranslateY() + speed);
@@ -234,7 +234,7 @@ public class App extends Application {
 		grassTerrain.setTranslateY(grassTerrain.getTranslateY() + speed);
         if (grassTerrain.getTranslateY() >= GAME_HEIGHT) {
 			System.out.println("Moving Grass Terrain");
-            grassTerrain.setTranslateY(-grassTerrain.getBoundsInLocal().getHeight());
+            grassTerrain.setTranslateY(waterTerrain.getTranslateY()-grassTerrain.getBoundsInParent().getHeight());
         }
 	}
 
@@ -390,7 +390,7 @@ public class App extends Application {
 
 	public void createGrassTerrain() {
 		Sprite building = new Sprite(Resources.BUILDING2);
-		building.relocate(0, -200);
+		building.relocate(0, 0);
 
 		for (int i = 3; i < 10; i++) {
 			addOn2[i] = new Sprite(Resources.ADDON2);
@@ -398,8 +398,8 @@ public class App extends Application {
 			addOn3[i] = new Sprite(Resources.ADDON3);
 
 			// use Math.random() to generate random number between 700 and 480
-			int max = -80;
-			int min = 10;
+			int max = 120;
+			int min = 210;
 			addOn3[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
 			addOn2[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
 			addOn4[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
@@ -408,6 +408,7 @@ public class App extends Application {
 		}
 
 		grassTerrain.getChildren().addAll(building);
+		grassTerrain.setTranslateY(-200);
 	}
 
 	/**
