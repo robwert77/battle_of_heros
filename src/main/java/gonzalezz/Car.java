@@ -30,7 +30,7 @@ public class Car extends Sprite {
     private double frameTime = 0.08;
 
     Car() {
-        super.setVelocityX(60);
+        this.setVelocityX(60);
     }
 
     public void update(double time) {
@@ -41,9 +41,9 @@ public class Car extends Sprite {
             if (currentFrame >= frames.length)
                 currentFrame = 0;
 
-            super.setImage(frames[currentFrame]);
-            if (super.getPositionX() > 450)
-                super.setPositionX(-350);
+            this.setImage(frames[currentFrame]);
+            if (this.getPositionX() > 450)
+                this.setPositionX(-350);
             frameTime = 0.03;
         } else {
             frameTime -= time;

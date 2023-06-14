@@ -1,5 +1,6 @@
 package gonzalezz;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import javafx.application.Application;
@@ -56,11 +57,6 @@ public class App extends Application {
 	private Sprite leaderboardButtonImg = new Sprite(
 			new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, true));
 
-	// Terrain Blocks
-	private Sprite[] bushBlock = new Sprite[20];
-	private Sprite[] fenceBlock = new Sprite[20];
-	private Sprite[] treeBlock = new Sprite[20];
-	private Sprite[] houseBlock = new Sprite[20];
 	private Sprite[] addOn2 = new Sprite[20];
 	private Sprite[] addOn3 = new Sprite[20];
 	private Sprite[] addOn4 = new Sprite[20];
@@ -69,17 +65,16 @@ public class App extends Application {
 	private Sprite[] backgroundPlaying = {
 			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)),
 			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)) };
-	// Game Screen Groups
-	private Group startingTerrain = new Group();
-	private Group roadTerrain = new Group();
+
 	private Group grassTerrain = new Group();
 	private Group backgroundDisplay = new Group(backgroundPlaying[0], backgroundPlaying[1]);
+	private ArrayList<Background> startingTerrains = new ArrayList<Background>();
 
 	private Group waterTerrain = new Group();
 	private Group[] gameScreens = {
 			new Group(background[0], background[1], forggieStart, titleImage, startButton, leaderboardButton,
 					letsGoText, optionsButton), // Add the background Sprites to the title screen group
-			new Group(roadTerrain, waterTerrain, startingTerrain, grassTerrain),
+			new Group(waterTerrain, grassTerrain),
 			new Group(backgroundDisplay) // Add the playing screen elements to this group
 	};
 
@@ -90,10 +85,16 @@ public class App extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Group root = new Group();
-		createRoadTerrain();
 		createWaterTerrain();
-		createStartingTerrain();
 		createGrassTerrain();
+
+		StartingTerrain startingTerrain = new StartingTerrain();    
+		RoadTerrain roadTerrain = new RoadTerrain();
+		startingTerrains.add(startingTerrain);
+		startingTerrains.add(roadTerrain);
+
+		gameScreens[PLAYING].getChildren().addAll(startingTerrains.get(0), startingTerrains.get(1), player);
+
 		Scene gameScene = new Scene(root, GAME_WIDTH, GAME_HEIGHT, Color.WHITE);
 		primaryStage.setScene(gameScene);
 		primaryStage.setResizable(false);
@@ -102,7 +103,7 @@ public class App extends Application {
 
 		gameScene.setOnKeyPressed(key -> keyPressed(key));
 		gameScene.setOnKeyReleased(key -> keyReleased(key));
-		root.getChildren().addAll(gameScreens[BACKGROUND], gameScreens[PLAYING], gameScreens[TITLE_SCREEN], player);
+		root.getChildren().addAll(gameScreens[BACKGROUND], gameScreens[PLAYING], gameScreens[TITLE_SCREEN]);
 		gameScreens[TITLE_SCREEN].setVisible(true);
 		gameScreens[PLAYING].setVisible(true);
 
@@ -155,6 +156,7 @@ public class App extends Application {
 	 * Setup all sprites for a new game
 	 */
 	public void newGame() {
+
 		backgroundPlaying[0].setPositionY(0);
 		backgroundPlaying[1].setPositionY(-background[1].getHeight());
 		backgroundPlaying[0].setVelocityY(200);
@@ -167,12 +169,15 @@ public class App extends Application {
 	 * Game updates happen as often as the timer can cause an event
 	 */
 	public void updateGame(double elapsedTime) {
-		// updateBackground(elapsedTime);
+
+		// update the starting terrain
+		startingTerrains.get(0).update(elapsedTime);
+		startingTerrains.get(1).update(elapsedTime) ;
+
 		updateTerrain(elapsedTime);
 
 		player.update(elapsedTime);
-		car1.update(elapsedTime);
-		
+
 		wood[0].updateW(elapsedTime, wood[3]);
 		wood[1].updateW(elapsedTime, wood[2]);
 		wood[2].updateW(elapsedTime, wood[1]);
@@ -188,54 +193,29 @@ public class App extends Application {
 
 	}
 
-	// /**
-	//  * Updates the background to create road animation. Moves both images down the
-	//  * window.
-	//  * When an image passes below the bottom of the window, resets it to the top
-	//  * 
-	//  * @param elapsedTime amount of time passed since last update.
-	//  */
-
-	// public void updateBackground(double elapsedTime) {
-
-	// 	backgroundPlaying[0].setPositionY(backgroundPlaying[0].getPositionY() + 0.01);
-	// 	backgroundPlaying[1].setPositionY(backgroundPlaying[1].getPositionY() + 0.01);
-
-	// 	if (backgroundPlaying[0].getPositionY() > 700) {
-	// 		backgroundPlaying[0].setPositionY(-backgroundPlaying[0].getHeight());
-	// 	}
-	// 	if (backgroundPlaying[1].getPositionY() > 700) {
-	// 		backgroundPlaying[1].setPositionY(-backgroundPlaying[1].getHeight());
-	// 	}
-	// }
-
 	public void updateTerrain(double elapsedTime) {
 		double speed = 1;
 
-		roadTerrain.setTranslateY(roadTerrain.getTranslateY() + speed);
+		/*
+		 * 		roadTerrain.setTranslateY(roadTerrain.getTranslateY() + speed);
 		if (roadTerrain.getTranslateY() >= GAME_HEIGHT) {
 			System.out.println("Moving Raod Terrain");
-			roadTerrain.setTranslateY(grassTerrain.getTranslateY()-roadTerrain.getBoundsInParent().getHeight());
+			roadTerrain.setTranslateY(grassTerrain.getTranslateY() - roadTerrain.getBoundsInParent().getHeight());
 			roadTerrainOffCount += 1;
 		}
+		 */
 
 		waterTerrain.setTranslateY(waterTerrain.getTranslateY() + speed);
 		if (waterTerrain.getTranslateY() >= GAME_HEIGHT) {
 			System.out.println("Moving water Terrain");
-			waterTerrain.setTranslateY(roadTerrain.getTranslateY() - waterTerrain.getBoundsInParent().getHeight());
-		}
-
-		startingTerrain.setTranslateY(startingTerrain.getTranslateY() + speed);
-		if (startingTerrain.getTranslateY() >= GAME_HEIGHT) {
-			// delete the starting terrain
-			startingTerrain.getChildren().clear();
+			waterTerrain.setTranslateY(startingTerrains.get(1).getTranslateY() - waterTerrain.getBoundsInParent().getHeight());
 		}
 
 		grassTerrain.setTranslateY(grassTerrain.getTranslateY() + speed);
-        if (grassTerrain.getTranslateY() >= GAME_HEIGHT) {
+		if (grassTerrain.getTranslateY() >= GAME_HEIGHT) {
 			System.out.println("Moving Grass Terrain");
-            grassTerrain.setTranslateY(waterTerrain.getTranslateY()-grassTerrain.getBoundsInParent().getHeight());
-        }
+			grassTerrain.setTranslateY(waterTerrain.getTranslateY() - grassTerrain.getBoundsInParent().getHeight());
+		}
 	}
 
 	/**
@@ -291,83 +271,6 @@ public class App extends Application {
 			startGame();
 			gameState = PLAYING;
 		});
-	}
-
-	// starting terrain group for the game
-	private void createStartingTerrain() {
-		bushBlock[0] = new Sprite(Resources.BUSH);
-		bushBlock[0].relocate(0, 695);
-		bushBlock[0].relocate(0, 695);
-		bushBlock[1] = new Sprite(Resources.BUSH);
-		bushBlock[1].relocate(60, 696);
-		bushBlock[2] = new Sprite(Resources.BUSH);
-		bushBlock[2].relocate(120, 695);
-		bushBlock[3] = new Sprite(Resources.BUSH);
-		bushBlock[3].relocate(0, 480);
-
-		addOn2[0] = new Sprite(Resources.ADDON2);
-		addOn2[0].relocate(350, 700);
-		addOn2[1] = new Sprite(Resources.ADDON2);
-		addOn2[1].relocate(370, 700);
-
-		addOn4[0] = new Sprite(Resources.ADDON4);
-		addOn4[0].relocate(340, 720);
-		addOn4[1] = new Sprite(Resources.ADDON4);
-		addOn4[1].relocate(360, 725);
-		for (int i = 2; i < 8; i++) {
-			addOn2[i] = new Sprite(Resources.ADDON2);
-			addOn4[i] = new Sprite(Resources.ADDON4);
-			addOn3[i] = new Sprite(Resources.ADDON3);
-
-			// use Math.random() to generate random number between 700 and 480
-			int max = 700;
-			int min = 480;
-			addOn3[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
-			addOn2[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
-			addOn4[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
-
-			startingTerrain.getChildren().addAll(addOn2[i], addOn4[i], addOn3[i]);
-		}
-
-		treeBlock[0] = new Sprite(Resources.TREE);
-		treeBlock[0].relocate(330, 550);
-
-		treeBlock[1] = new Sprite(Resources.TREE);
-		treeBlock[1].relocate(350, 450);
-
-		fenceBlock[0] = new Sprite(Resources.FENCE);
-		fenceBlock[0].relocate(0, 420);
-
-		// add another fence
-		fenceBlock[1] = new Sprite(Resources.FENCE);
-		fenceBlock[1].relocate(300, 420);
-
-		Sprite floor = new Sprite(Resources.FLOOR);
-		floor.relocate(2, 755);
-
-		houseBlock[0] = new Sprite(Resources.BUILDING1);
-		houseBlock[0].relocate(15, 460);
-
-		startingTerrain.getChildren().addAll(bushBlock[0], bushBlock[1], bushBlock[2], addOn2[0], addOn4[0], addOn2[1],
-				addOn4[1], treeBlock[1], treeBlock[0], houseBlock[0], fenceBlock[0], fenceBlock[1], bushBlock[3],
-				floor);
-	}
-
-	public void createRoadTerrain() {
-		Sprite road = new Sprite(Resources.STREET);
-		road.relocate(0, 35);
-
-		// make to side walks
-		Sprite sideWalk = new Sprite(Resources.FLOOR);
-		sideWalk.relocate(0, 0);
-
-		Sprite sideWalk2 = new Sprite(Resources.FLOOR);
-		sideWalk2.relocate(0, 205);
-
-		car1.setPosition(-200, 25);
-
-		roadTerrain.getChildren().addAll(road, sideWalk, sideWalk2, car1);
-		roadTerrain.setTranslateY(175);
 	}
 
 	public void createWaterTerrain() {
