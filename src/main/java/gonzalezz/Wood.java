@@ -27,5 +27,6 @@ public class Wood extends Sprite {
             setVelocityX(-getVelocityX());
             woods.setVelocityX(150);
         }
+        
     }
 }

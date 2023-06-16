@@ -34,5 +34,8 @@ public class WaterTerrain extends Background {
         wood[1].updateW(elapsedTime, wood[2]);
         wood[2].updateW(elapsedTime, wood[1]);
         wood[3].updateW(elapsedTime, wood[0]);
+
+
+
     }
 }

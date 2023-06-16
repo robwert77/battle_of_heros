@@ -9,7 +9,7 @@ public class Background extends Group {
     private double velocityX = 0;
     private double velocityY = 0;
     private double GAME_HEIGHT = 800;
-    private double speed = 0.7;
+    private double speed = 0.5;
 
     public void updateB(double elapsedTime, Background target) {
         positionX = positionX + velocityX * elapsedTime;

@@ -31,6 +31,11 @@ public class App extends Application {
 	public static final int PLAYING = 1;
 	public static final int BACKGROUND = 2;
 
+	public static final int START = 0;
+	public static final int ROAD = 1;
+	public static final int WATER = 2;
+	public static final int GRASS = 3;
+
 	private int gameState = TITLE_SCREEN;
 
 	// used to track keys as they are pressed/released.
@@ -82,13 +87,13 @@ public class App extends Application {
 		RoadTerrain roadTerrain = new RoadTerrain();
 		GrassTerrain grassTerrain = new GrassTerrain();
 		WaterTerrain waterTerrain = new WaterTerrain();
-		startingTerrains.add(waterTerrain);
-		startingTerrains.add(grassTerrain);
 		startingTerrains.add(startingTerrain);
 		startingTerrains.add(roadTerrain);
+		startingTerrains.add(waterTerrain);
+		startingTerrains.add(grassTerrain);
 
-		gameScreens[PLAYING].getChildren().addAll(startingTerrains.get(0), startingTerrains.get(1),
-				startingTerrains.get(2), startingTerrains.get(3), player, numberOfJumpsText);
+		gameScreens[PLAYING].getChildren().addAll(startingTerrains.get(START), startingTerrains.get(ROAD),
+				startingTerrains.get(WATER), startingTerrains.get(GRASS), player, numberOfJumpsText);
 
 		Scene gameScene = new Scene(root, GAME_WIDTH, GAME_HEIGHT, Color.WHITE);
 		primaryStage.setScene(gameScene);
@@ -172,58 +177,15 @@ public class App extends Application {
 	public void updateGame(double elapsedTime) {
 
 		// update the starting terrain
-		startingTerrains.get(0).updateNormal(elapsedTime);
-		startingTerrains.get(1).updateB(elapsedTime, startingTerrains.get(0));
-		startingTerrains.get(2).updateB(elapsedTime, startingTerrains.get(1));
-		startingTerrains.get(3).updateB(elapsedTime, startingTerrains.get(2));
-
-		updateTerrain(elapsedTime);
+		startingTerrains.get(START).updateB(elapsedTime, startingTerrains.get(GRASS));
+		startingTerrains.get(ROAD).updateB(elapsedTime, startingTerrains.get(START));
+		startingTerrains.get(WATER).updateB(elapsedTime, startingTerrains.get(ROAD));
+		startingTerrains.get(GRASS).updateB(elapsedTime, startingTerrains.get(WATER));
 
 		player.update(elapsedTime);
 
 	}
 
-	/**
-	 * Move the player left/right depending on keyboard input
-	 * 
-	 * @param elapsedTime
-	 */
-	public void updatePlayer(double elapsedTime) {
-
-	}
-
-	public void updateTerrain(double elapsedTime) {
-		double speed = 1;
-
-		/*
-		 * roadTerrain.setTranslateY(roadTerrain.getTranslateY() + speed);
-		 * if (roadTerrain.getTranslateY() >= GAME_HEIGHT) {
-		 * System.out.println("Moving Raod Terrain");
-		 * roadTerrain.setTranslateY(grassTerrain.getTranslateY() -
-		 * roadTerrain.getBoundsInParent().getHeight());
-		 * roadTerrainOffCount += 1;
-		 * }
-		 */
-		/*
-		 * waterTerrain.setTranslateY(waterTerrain.getTranslateY() + speed);
-		 * if (waterTerrain.getTranslateY() >= GAME_HEIGHT) {
-		 * System.out.println("Moving water Terrain");
-		 * waterTerrain.setTranslateY(startingTerrains.get(1).getTranslateY() -
-		 * waterTerrain.getBoundsInParent().getHeight());
-		 * }
-		 */
-	}
-
-	/**
-	 * Respond to key press events by checking for the pause key (P),
-	 * and starting or stopping the game timer appropriately
-	 * 
-	 * Other key presses are stored in the "Keyboard" HashSet for polling
-	 * during the main game update.
-	 * 
-	 * @param key         KeyEvent program is responding to
-	 * @param elapsedTime
-	 */
 	public void keyPressed(KeyEvent key) {
 		if (gameState == PLAYING) {
 			if (!keyboard.contains(KeyCode.P)) {
@@ -248,12 +210,19 @@ public class App extends Application {
 			}
 		}
 
-
-
 		if (gameState == PLAYING) {
-			if (key.getCode() == KeyCode.SPACE && !keyboard.contains(KeyCode.SPACE)) {
-				player.startJump(); // Make the player jump when SPACE is pressed
-				player.addJump();
+			if (key.getCode() == KeyCode.W && !keyboard.contains(KeyCode.W)) {
+				numberOfJumpsText.setText("" + player.addJump());
+				player.startJump();
+			}
+			if (key.getCode() == KeyCode.A && !keyboard.contains(KeyCode.A)) {
+				numberOfJumpsText.setText("" + player.addJump());
+				player.jumpLeft();
+			}
+
+			if (key.getCode() == KeyCode.D && !keyboard.contains(KeyCode.D)) {
+				numberOfJumpsText.setText("" + player.addJump());
+				player.jumpRight();
 			}
 		}
 
@@ -269,19 +238,13 @@ public class App extends Application {
 		});
 	}
 
-	/**
-	 * Removes a key from the "keyboard" HashSet when it is released
-	 * 
-	 * @param key KeyEvent that triggered this method call
-	 */
+
 	public void keyReleased(KeyEvent key) {
 		// remove the record of the key being pressed:
 		keyboard.remove(key.getCode());
 	}
 
-	/**
-	 * Starts the game play from the title screen
-	 */
+
 	public void startGame() {
 		gameScreens[TITLE_SCREEN].setVisible(false);
 		gameScreens[PLAYING].setVisible(true);
@@ -290,17 +253,12 @@ public class App extends Application {
 		gameTimer.start();
 	}
 
-	/**
-	 * Switch the program to a new state when the player loses (by hitting another
-	 * car).
-	 */
+
 	public void gameOver() {
 		gameTimer.stop();
 	}
 
-	/**
-	 * Pause or unpause the game
-	 */
+
 	public void pause() {
 		if (gameTimer.isPaused()) {
 			gameTimer.start();
