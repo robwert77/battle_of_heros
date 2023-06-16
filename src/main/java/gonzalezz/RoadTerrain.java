@@ -24,12 +24,9 @@ public class RoadTerrain extends Background {
         setTranslateY(175);
     }
 
-    public void update(double elapsedTime) {
-        super.update(elapsedTime);
+    @Override
+    public void updateB(double elapsedTime) {
+        super.updateB(elapsedTime);
         car1.update(elapsedTime);
-
-        if (this.getTranslateY() >= 800) {
-            this.setTranslateY(-this.getBoundsInParent().getHeight()); // might need fixing later
-        }
     }
 }

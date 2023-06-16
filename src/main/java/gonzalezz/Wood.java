@@ -23,15 +23,9 @@ public class Wood extends Sprite {
     public void updateW(double time, Wood woods) {
         super.update(time);
 
-        if (this.intersect(woods)) {
-            this.setVelocityX(-this.getVelocityX());
+        if (intersect(woods)) {
+            setVelocityX(-this.getVelocityX());
             woods.setVelocityX(150);
         }
-
-        if (super.getPositionX() > 450)
-            super.setPositionX(-350);
-        
-        if (super.getPositionX() < -350)
-            super.setPositionX(450);
     }
 }

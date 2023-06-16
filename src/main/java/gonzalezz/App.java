@@ -60,7 +60,6 @@ public class App extends Application {
 	private Sprite[] addOn2 = new Sprite[20];
 	private Sprite[] addOn3 = new Sprite[20];
 	private Sprite[] addOn4 = new Sprite[20];
-	private Car car1 = new Car();
 	Wood wood[] = new Wood[5];
 	private Sprite[] backgroundPlaying = {
 			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)),
@@ -85,15 +84,17 @@ public class App extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Group root = new Group();
-		createWaterTerrain();
 		createGrassTerrain();
 
-		StartingTerrain startingTerrain = new StartingTerrain();    
+		StartingTerrain startingTerrain = new StartingTerrain();
 		RoadTerrain roadTerrain = new RoadTerrain();
+		WaterTerrain waterTerrain = new WaterTerrain();
+		startingTerrains.add(waterTerrain);
 		startingTerrains.add(startingTerrain);
 		startingTerrains.add(roadTerrain);
 
-		gameScreens[PLAYING].getChildren().addAll(startingTerrains.get(0), startingTerrains.get(1), player);
+		gameScreens[PLAYING].getChildren().addAll(startingTerrains.get(0), startingTerrains.get(1),
+				startingTerrains.get(2), player);
 
 		Scene gameScene = new Scene(root, GAME_WIDTH, GAME_HEIGHT, Color.WHITE);
 		primaryStage.setScene(gameScene);
@@ -171,17 +172,14 @@ public class App extends Application {
 	public void updateGame(double elapsedTime) {
 
 		// update the starting terrain
-		startingTerrains.get(0).update(elapsedTime);
-		startingTerrains.get(1).update(elapsedTime) ;
+		startingTerrains.get(0).updateB(elapsedTime);
+		startingTerrains.get(1).updateB(elapsedTime);
+		startingTerrains.get(2).updateB(elapsedTime);
 
 		updateTerrain(elapsedTime);
 
 		player.update(elapsedTime);
 
-		wood[0].updateW(elapsedTime, wood[3]);
-		wood[1].updateW(elapsedTime, wood[2]);
-		wood[2].updateW(elapsedTime, wood[1]);
-		wood[3].updateW(elapsedTime, wood[0]);
 	}
 
 	/**
@@ -197,19 +195,22 @@ public class App extends Application {
 		double speed = 1;
 
 		/*
-		 * 		roadTerrain.setTranslateY(roadTerrain.getTranslateY() + speed);
-		if (roadTerrain.getTranslateY() >= GAME_HEIGHT) {
-			System.out.println("Moving Raod Terrain");
-			roadTerrain.setTranslateY(grassTerrain.getTranslateY() - roadTerrain.getBoundsInParent().getHeight());
-			roadTerrainOffCount += 1;
-		}
+		 * roadTerrain.setTranslateY(roadTerrain.getTranslateY() + speed);
+		 * if (roadTerrain.getTranslateY() >= GAME_HEIGHT) {
+		 * System.out.println("Moving Raod Terrain");
+		 * roadTerrain.setTranslateY(grassTerrain.getTranslateY() -
+		 * roadTerrain.getBoundsInParent().getHeight());
+		 * roadTerrainOffCount += 1;
+		 * }
 		 */
-
-		waterTerrain.setTranslateY(waterTerrain.getTranslateY() + speed);
-		if (waterTerrain.getTranslateY() >= GAME_HEIGHT) {
-			System.out.println("Moving water Terrain");
-			waterTerrain.setTranslateY(startingTerrains.get(1).getTranslateY() - waterTerrain.getBoundsInParent().getHeight());
-		}
+		/*
+		 * waterTerrain.setTranslateY(waterTerrain.getTranslateY() + speed);
+		 * if (waterTerrain.getTranslateY() >= GAME_HEIGHT) {
+		 * System.out.println("Moving water Terrain");
+		 * waterTerrain.setTranslateY(startingTerrains.get(1).getTranslateY() -
+		 * waterTerrain.getBoundsInParent().getHeight());
+		 * }
+		 */
 
 		grassTerrain.setTranslateY(grassTerrain.getTranslateY() + speed);
 		if (grassTerrain.getTranslateY() >= GAME_HEIGHT) {
@@ -271,24 +272,6 @@ public class App extends Application {
 			startGame();
 			gameState = PLAYING;
 		});
-	}
-
-	public void createWaterTerrain() {
-		Sprite water = new Sprite(Resources.WATER);
-		water.relocate(0, 9.5);
-
-		Sprite divider = new Sprite(Resources.ADDON5);
-		divider.relocate(0, 0);
-
-		wood[0] = new Wood();
-		wood[0].setPositionY(15);
-		wood[1] = new Wood();
-		wood[2] = new Wood();
-		wood[3] = new Wood();
-		wood[3].setPositionY(15);
-
-		waterTerrain.getChildren().addAll(water, divider, wood[0], wood[1], wood[2]);
-		waterTerrain.setTranslateY(40);
 	}
 
 	public void createGrassTerrain() {

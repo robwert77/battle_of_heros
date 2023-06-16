@@ -10,13 +10,13 @@ public class Background extends Group {
     private double velocityY = 0;
     private double speed = 1;
 
-    public void update(double elapsedTime) {
+    public void updateB(double elapsedTime) {
         positionX = positionX + velocityX * elapsedTime;
         positionY = positionY + velocityY * elapsedTime;
 
-        this.relocate(positionX, positionY);
+        relocate(positionX, positionY);
 
-        this.setTranslateY(this.getTranslateY() + speed);
+        setTranslateY(getTranslateY() + speed);
     }
 
 }

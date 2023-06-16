@@ -73,7 +73,7 @@ public class StartingTerrain extends Background {
     }
 
     @Override
-    public void update(double elapsedTime) {
-        super.update(elapsedTime);
+    public void updateB(double elapsedTime) {
+        super.updateB(elapsedTime);
     }
 }
