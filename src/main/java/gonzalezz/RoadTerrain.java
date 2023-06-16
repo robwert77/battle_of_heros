@@ -25,8 +25,8 @@ public class RoadTerrain extends Background {
     }
 
     @Override
-    public void updateB(double elapsedTime) {
-        super.updateB(elapsedTime);
+    public void updateB(double elapsedTime, Background source) {
+        super.updateB(elapsedTime, source);
         car1.update(elapsedTime);
     }
 }

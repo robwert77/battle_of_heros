@@ -27,21 +27,12 @@ public class WaterTerrain extends Background {
     }
 
     @Override
-    public void updateB(double elapsedTime) {
-        super.updateB(elapsedTime);
+    public void updateB(double elapsedTime, Background source) {
+        super.updateB(elapsedTime, source);
 
         wood[0].updateW(elapsedTime, wood[3]);
         wood[1].updateW(elapsedTime, wood[2]);
         wood[2].updateW(elapsedTime, wood[1]);
         wood[3].updateW(elapsedTime, wood[0]);
-
-        for(int i = 0; i < wood.length; i++) {
-
-            if(wood[i].getTranslateX() > 420) 
-            {
-                wood[i].setTranslateX(-100);
-                System.out.println("Moved Wood " + i); 
-            }
-        }
     }
 }

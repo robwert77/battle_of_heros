@@ -15,16 +15,16 @@ public class Wood extends Sprite {
 
     public Wood() {
         super.setImage(types[type]);
-        super.setVelocityX((int) (Math.random() * (70 - 40) + 40));
-        super.setPositionX((int) (Math.random() * (450)));
-        super.setPositionY(80);
+        this.setVelocityX((int) (Math.random() * (70 - 40) + 40));
+        this.setPositionX((int) (Math.random() * (450)));
+        this.setPositionY(80);
     }
 
     public void updateW(double time, Wood woods) {
         super.update(time);
 
         if (intersect(woods)) {
-            setVelocityX(-this.getVelocityX());
+            setVelocityX(-getVelocityX());
             woods.setVelocityX(150);
         }
     }

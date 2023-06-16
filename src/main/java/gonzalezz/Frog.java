@@ -4,7 +4,8 @@ import javafx.scene.image.Image;
 
 public class Frog extends Sprite {
 
-    private boolean animationEnded = true;
+    private boolean animationEnded = false;
+    private int numberOfJumps = 0;
 
     private final static Image[] frames = {
             new Image("file:resource/Moving_Frog/Moving_1.png", 160, 0, true, true),
@@ -71,5 +72,13 @@ public class Frog extends Sprite {
 
     public boolean getAnimationEnded() {
         return animationEnded;
+    }
+
+    public int getNumberOfJumps() {
+        return numberOfJumps;
+    }
+
+    public int addJump() {
+        return numberOfJumps++;
     }
 }

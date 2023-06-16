@@ -12,6 +12,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import animatefx.animation.*;
 
@@ -29,10 +33,6 @@ public class App extends Application {
 
 	private int gameState = TITLE_SCREEN;
 
-	// needed variables
-	private int roadTerrainOffCount = 0;
-	private int jumps = 0;
-
 	// used to track keys as they are pressed/released.
 	private final HashSet keyboard = new HashSet();
 
@@ -48,7 +48,7 @@ public class App extends Application {
 	private Sprite titleImage = new Sprite(new Image("file:resource/UI/Logo.png", 340, 0, true, true));
 	private Sprite letsGoText = new Sprite(new Image("file:resource/UI/LetsGo_00.png", 340, 0, true, true));
 	private Frog player = new Frog();
-	// Buttons
+	private Text numberOfJumpsText = new Text("" + player.getNumberOfJumps());
 	private Button startButton = new Button();
 	private Button optionsButton = new Button();
 	private Sprite optionsButtonImg = new Sprite(new Image("file:resource/UI/Option_icon.png", 35, 0, true, false));
@@ -56,24 +56,17 @@ public class App extends Application {
 	private Button leaderboardButton = new Button();
 	private Sprite leaderboardButtonImg = new Sprite(
 			new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, true));
-
-	private Sprite[] addOn2 = new Sprite[20];
-	private Sprite[] addOn3 = new Sprite[20];
-	private Sprite[] addOn4 = new Sprite[20];
-	Wood wood[] = new Wood[5];
 	private Sprite[] backgroundPlaying = {
 			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)),
 			new Sprite(new Image("file:resource/Terrain/Bg.png", 500, 0, true, true)) };
 
-	private Group grassTerrain = new Group();
 	private Group backgroundDisplay = new Group(backgroundPlaying[0], backgroundPlaying[1]);
 	private ArrayList<Background> startingTerrains = new ArrayList<Background>();
 
-	private Group waterTerrain = new Group();
 	private Group[] gameScreens = {
 			new Group(background[0], background[1], forggieStart, titleImage, startButton, leaderboardButton,
 					letsGoText, optionsButton), // Add the background Sprites to the title screen group
-			new Group(waterTerrain, grassTerrain),
+			new Group(),
 			new Group(backgroundDisplay) // Add the playing screen elements to this group
 	};
 
@@ -84,17 +77,18 @@ public class App extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Group root = new Group();
-		createGrassTerrain();
 
 		StartingTerrain startingTerrain = new StartingTerrain();
 		RoadTerrain roadTerrain = new RoadTerrain();
+		GrassTerrain grassTerrain = new GrassTerrain();
 		WaterTerrain waterTerrain = new WaterTerrain();
 		startingTerrains.add(waterTerrain);
+		startingTerrains.add(grassTerrain);
 		startingTerrains.add(startingTerrain);
 		startingTerrains.add(roadTerrain);
 
 		gameScreens[PLAYING].getChildren().addAll(startingTerrains.get(0), startingTerrains.get(1),
-				startingTerrains.get(2), player);
+				startingTerrains.get(2), startingTerrains.get(3), player, numberOfJumpsText);
 
 		Scene gameScene = new Scene(root, GAME_WIDTH, GAME_HEIGHT, Color.WHITE);
 		primaryStage.setScene(gameScene);
@@ -136,7 +130,6 @@ public class App extends Application {
 				.setImage(new Image("file:resource/UI/LeaderboardBtn.png", 85, 0, true, false)));
 
 		letsGoText.relocate(45, 200);
-		;
 		Shake letsGoShake = new Shake(letsGoText);
 		letsGoShake.setCycleCount(1000); // 1000 shakes
 		letsGoShake.setSpeed(0.1);
@@ -151,6 +144,13 @@ public class App extends Application {
 				.setImage(new Image("file:resource/UI/Option_icon_hover.png", 35, 0, true, false)));
 		optionsButton.setOnMouseExited(
 				e -> optionsButtonImg.setImage(new Image("file:resource/UI/Option_icon.png", 35, 0, true, false)));
+
+		numberOfJumpsText.setFont(Font.loadFont("file:resource/Fonts/gomarice_no_continue.ttf", 50));
+		numberOfJumpsText.setFill(Color.WHITE);
+		numberOfJumpsText.setTextAlignment(TextAlignment.CENTER);
+		numberOfJumpsText.setStroke(Color.BLACK);
+		numberOfJumpsText.relocate((GAME_WIDTH - numberOfJumpsText.getBoundsInLocal().getWidth()) / 2, 20);
+
 	}
 
 	/**
@@ -172,9 +172,10 @@ public class App extends Application {
 	public void updateGame(double elapsedTime) {
 
 		// update the starting terrain
-		startingTerrains.get(0).updateB(elapsedTime);
-		startingTerrains.get(1).updateB(elapsedTime);
-		startingTerrains.get(2).updateB(elapsedTime);
+		startingTerrains.get(0).updateNormal(elapsedTime);
+		startingTerrains.get(1).updateB(elapsedTime, startingTerrains.get(0));
+		startingTerrains.get(2).updateB(elapsedTime, startingTerrains.get(1));
+		startingTerrains.get(3).updateB(elapsedTime, startingTerrains.get(2));
 
 		updateTerrain(elapsedTime);
 
@@ -211,12 +212,6 @@ public class App extends Application {
 		 * waterTerrain.getBoundsInParent().getHeight());
 		 * }
 		 */
-
-		grassTerrain.setTranslateY(grassTerrain.getTranslateY() + speed);
-		if (grassTerrain.getTranslateY() >= GAME_HEIGHT) {
-			System.out.println("Moving Grass Terrain");
-			grassTerrain.setTranslateY(waterTerrain.getTranslateY() - grassTerrain.getBoundsInParent().getHeight());
-		}
 	}
 
 	/**
@@ -253,12 +248,12 @@ public class App extends Application {
 			}
 		}
 
+
+
 		if (gameState == PLAYING) {
-			if (key.getCode() == KeyCode.SPACE) {
+			if (key.getCode() == KeyCode.SPACE && !keyboard.contains(KeyCode.SPACE)) {
 				player.startJump(); // Make the player jump when SPACE is pressed
-				if (player.getAnimationEnded() == true) {
-					jumps += 1;
-				}
+				player.addJump();
 			}
 		}
 
@@ -272,29 +267,6 @@ public class App extends Application {
 			startGame();
 			gameState = PLAYING;
 		});
-	}
-
-	public void createGrassTerrain() {
-		Sprite building = new Sprite(Resources.BUILDING2);
-		building.relocate(0, 0);
-
-		for (int i = 3; i < 10; i++) {
-			addOn2[i] = new Sprite(Resources.ADDON2);
-			addOn4[i] = new Sprite(Resources.ADDON4);
-			addOn3[i] = new Sprite(Resources.ADDON3);
-
-			// use Math.random() to generate random number between 700 and 480
-			int max = 120;
-			int min = 210;
-			addOn3[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
-			addOn2[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
-			addOn4[i].relocate(Math.random() * (400 - 0 + 1), Math.random() * (max - min + 1) + min);
-
-			grassTerrain.getChildren().addAll(addOn2[i], addOn4[i], addOn3[i]);
-		}
-
-		grassTerrain.getChildren().addAll(building);
-		grassTerrain.setTranslateY(-200);
 	}
 
 	/**
