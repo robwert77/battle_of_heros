@@ -11,7 +11,7 @@ public class Background extends Group {
     private double GAME_HEIGHT = 800;
     private double speed = 0.5;
 
-    public void updateB(double elapsedTime, Background target) {
+    public void updateB(double elapsedTime, Background target, Frog frog) {
         positionX = positionX + velocityX * elapsedTime;
         positionY = positionY + velocityY * elapsedTime;
 
@@ -21,15 +21,6 @@ public class Background extends Group {
         if (getTranslateY() >= GAME_HEIGHT) {
             setTranslateY(target.getTranslateY() - getBoundsInParent().getHeight());
         }
-    }
-
-    public void updateNormal(double elapsedTime) {
-        positionX = positionX + velocityX * elapsedTime;
-        positionY = positionY + velocityY * elapsedTime;
-
-        relocate(positionX, positionY);
-
-        setTranslateY(getTranslateY() + speed);
     }
 
 }

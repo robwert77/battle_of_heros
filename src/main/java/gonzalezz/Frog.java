@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 public class Frog extends Sprite {
 
     private int numberOfJumps = 0;
+    private double speed = 0.5;
     private boolean animationEnded = true;
 
     private final static Image[] frames = {
@@ -42,6 +43,8 @@ public class Frog extends Sprite {
     public void update(double time) {
         super.update(time);
 
+        setTranslateY(getTranslateY() + speed);
+
         if (!animationEnded) {
             if (frameTime <= 0) {
                 currentFrame++;
@@ -54,9 +57,8 @@ public class Frog extends Sprite {
                     animationEnded = true;
                     System.out.println("Animation ended");
                     setVelocityX(0);
-                    setVelocityY(0);
                 } else {
-                    super.setVelocityY(-40);
+                    setTranslateY(getTranslateY() - 2.8);
                     frameTime = 0.008;
                 }
             } else {

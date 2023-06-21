@@ -6,9 +6,8 @@ public class StartingTerrain extends Background {
     private Sprite[] addOn4 = new Sprite[10];
     private Sprite[] addOn3 = new Sprite[10];
     private Sprite[] treeBlock = new Sprite[3];
-    private Sprite[] fenceBlock = new Sprite[3];
+    private Sprite[] fenceBlock = new Sprite[2];
     private Sprite[] houseBlock = new Sprite[2];
-
 
     public StartingTerrain() {
         createStartingTerrain();
@@ -72,10 +71,20 @@ public class StartingTerrain extends Background {
         setTranslateY(420);
     }
 
-    @Override
-    public void updateNormal(double elapsedTime) {
-        super.updateNormal(elapsedTime);
+    // get fence block
+    public Sprite[] getFenceBlock() {
+        return fenceBlock;
+    }
 
-        
+    @Override
+    public void updateB(double elapsedTime, Background background, Frog frog) {
+        super.updateB(elapsedTime, background, frog);
+
+        // check collisions with fences
+        for (int i = 0; i < fenceBlock.length; i++) {
+            if (fenceBlock[i].getBoundary().intersects(frog.getBoundary())) {
+                frog.setVelocityY(20);
+            }
+        }
     }
 }

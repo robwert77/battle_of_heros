@@ -27,8 +27,8 @@ public class WaterTerrain extends Background {
     }
 
     @Override
-    public void updateB(double elapsedTime, Background source) {
-        super.updateB(elapsedTime, source);
+    public void updateB(double elapsedTime, Background source, Frog frog) {
+        super.updateB(elapsedTime, source, frog);
 
         wood[0].updateW(elapsedTime, wood[3]);
         wood[1].updateW(elapsedTime, wood[2]);

@@ -168,8 +168,10 @@ public class App extends Application {
 		backgroundPlaying[0].setVelocityY(200);
 		backgroundPlaying[1].setVelocityY(200);
 
+
 		player.setVisible(true);
 	}
+
 
 	/**
 	 * Game updates happen as often as the timer can cause an event
@@ -177,14 +179,16 @@ public class App extends Application {
 	public void updateGame(double elapsedTime) {
 
 		// update the starting terrain
-		startingTerrains.get(START).updateB(elapsedTime, startingTerrains.get(GRASS));
-		startingTerrains.get(ROAD).updateB(elapsedTime, startingTerrains.get(START));
-		startingTerrains.get(WATER).updateB(elapsedTime, startingTerrains.get(ROAD));
-		startingTerrains.get(GRASS).updateB(elapsedTime, startingTerrains.get(WATER));
+		startingTerrains.get(START).updateB(elapsedTime, startingTerrains.get(GRASS), player);
+		startingTerrains.get(ROAD).updateB(elapsedTime, startingTerrains.get(START), player);
+		startingTerrains.get(WATER).updateB(elapsedTime, startingTerrains.get(ROAD), player);
+		startingTerrains.get(GRASS).updateB(elapsedTime, startingTerrains.get(WATER), player);
 
 		player.update(elapsedTime);
 
 	}
+
+	
 
 	public void keyPressed(KeyEvent key) {
 		if (gameState == PLAYING) {
@@ -256,6 +260,11 @@ public class App extends Application {
 
 	public void gameOver() {
 		gameTimer.stop();
+		gameScreens[TITLE_SCREEN].setVisible(true);
+		gameScreens[PLAYING].setVisible(false);
+		gameScreens[BACKGROUND].setVisible(false);
+		gameState = TITLE_SCREEN;
+		gameTimer.start();
 	}
 
 
